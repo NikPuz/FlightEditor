@@ -145,50 +145,132 @@
                 </Grid>
             </TabItem>
             
-            <TabItem Header="Добавить поезд">
+            <TabItem Header="Поезда">
                 <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Номер:"></TextBlock>
                         <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
                         <TextBlock Text="Тип:"></TextBlock>
-                        <ComboBox HorizontalAlignment="Left" Width="75"></ComboBox>
+                        <ComboBox Width="120" HorizontalAlignment="Left"></ComboBox>
                         <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
                     </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.RowSpan="2">
+                        <DataGrid>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Номер" Width="*"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Тип" Width="*"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
+                    </StackPanel>
+                    <GroupBox Grid.Row="1" Header="Редактировать таблицу">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Номер:"></TextBlock>
+                            <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                            <TextBlock Text="Тип:"></TextBlock>
+                            <ComboBox Width="120" HorizontalAlignment="Left"></ComboBox>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Изменить"></Button>
+                                <Button Content="Удалить"></Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
                 </Grid>
             </TabItem>
             
-            <TabItem Header="Добавить станцию">
+            <TabItem Header="Станции">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Название:"></TextBlock>
-                        <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
-                        <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
-                    </StackPanel>
 
-                    <GroupBox Header="Соседние станции" Grid.Column="1">
+                    <Grid Background="#FFE5E5E5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Станция:"></TextBlock>
-                            <ComboBox Width="auto" HorizontalAlignment="Left"></ComboBox>
-                            <TextBlock Text="Расстояние:"></TextBlock>
+                            <TextBlock Text="Название:"></TextBlock>
                             <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
-                            <Button HorizontalAlignment="Left" Content="Добавить соседнюю станцию" Width="auto"></Button>
-
+                            <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Grid.RowSpan="2">
                             <DataGrid>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Станция" Width="*"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Расстояние" Width="*"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
+                            <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
                         </StackPanel>
-                    </GroupBox>
+                        <GroupBox Grid.Row="1" Header="Редактировать таблицу">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Название:"></TextBlock>
+                                <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Изменить"></Button>
+                                    <Button Content="Удалить"></Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
 
-                    <StackPanel Orientation="Vertical">
-                        
-                    </StackPanel>
+                    <GroupBox Header="Соседние станции" Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <GroupBox Header="Назначить станцию соседней" Grid.Column="1" >
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Станция:"></TextBlock>
+                                    <ComboBox Width="120" HorizontalAlignment="Left"></ComboBox>
+                                    <TextBlock Text="Расстояние:"></TextBlock>
+                                    <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                                    <Button HorizontalAlignment="Left" Content="Назначить" Width="auto"></Button>
+                                </StackPanel>
+                            </GroupBox>
+                            <StackPanel Grid.RowSpan="2">
+                                <DataGrid>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Станция" Width="*"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Расстояние" Width="*"></DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
+                            </StackPanel>
+                            <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать таблицу">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Название:"></TextBlock>
+                                    <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                                    <TextBlock Text="Расстояние:"></TextBlock>
+                                    <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Изменить"></Button>
+                                        <Button Content="Удалить"></Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
