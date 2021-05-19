@@ -15,7 +15,7 @@
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="MinWidth" Value="10" />
-            <Setter Property="Margin" Value="3,5,5,5" />
+            <Setter Property="Margin" Value="5,5,5,5" />
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="5,5,5,5" />
@@ -24,6 +24,9 @@
             <Setter Property="Margin" Value="2,5,2,5" />
         </Style>
         <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5,5,5,5" />
+        </Style>
+        <Style TargetType="ComboBox">
             <Setter Property="Margin" Value="5,5,5,5" />
         </Style>
     </Window.Resources>
@@ -76,17 +79,29 @@
                                     <DataGridComboBoxColumn Header="Тип" Width="*"></DataGridComboBoxColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Button Content="Добавить поезд" HorizontalAlignment="Left"></Button>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Выбрать"></Button>
+                            </StackPanel>
                         </StackPanel>
                     </GroupBox>
                     
                     <GroupBox Header="Состав" Grid.Column="3">
-                        <DataGrid >
+                        <StackPanel Orientation="Vertical">
+                            <DataGrid >
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Номер"></DataGridTextColumn>
                                 <DataGridComboBoxColumn Header="Тип" Width="*"></DataGridComboBoxColumn>
                             </DataGrid.Columns>
                         </DataGrid>
+
+                            <WrapPanel Orientation="Horizontal">
+                                <TextBlock Text="Тип:" VerticalAlignment="Center"></TextBlock >
+                                <ComboBox Width="75"></ComboBox>
+                                <Button Content="Добавить"></Button>
+                                <Button Content="Удалить"></Button>
+                            </WrapPanel>
+                        </StackPanel>
+
                     </GroupBox>
                     
                     <GroupBox Header="Маршрут" Grid.Column="5">
@@ -98,7 +113,12 @@
                                     <DataGridTextColumn Header="Время остановки"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Button Content="Добавить станцию" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Button>
+                            <WrapPanel Orientation="Horizontal">
+                                <TextBlock Text="Станция:" VerticalAlignment="Center"></TextBlock >
+                                <ComboBox Width="75"></ComboBox>
+                                <Button Content="Добавить"></Button>
+                                <Button Content="Удалить"></Button>
+                            </WrapPanel>
                         </StackPanel>
                     </GroupBox>
                     
@@ -122,6 +142,53 @@
                     <GroupBox Header="Состав" Grid.Column="3">
 
                     </GroupBox>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="Добавить поезд">
+                <Grid Background="#FFE5E5E5">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Номер:"></TextBlock>
+                        <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                        <TextBlock Text="Тип:"></TextBlock>
+                        <ComboBox HorizontalAlignment="Left" Width="75"></ComboBox>
+                        <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="Добавить станцию">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Название:"></TextBlock>
+                        <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                        <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
+                    </StackPanel>
+
+                    <GroupBox Header="Соседние станции" Grid.Column="1">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Станция:"></TextBlock>
+                            <ComboBox Width="auto" HorizontalAlignment="Left"></ComboBox>
+                            <TextBlock Text="Расстояние:"></TextBlock>
+                            <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                            <Button HorizontalAlignment="Left" Content="Добавить соседнюю станцию" Width="auto"></Button>
+
+                            <DataGrid>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Станция" Width="*"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Расстояние" Width="*"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <StackPanel Orientation="Vertical">
+                        
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>
