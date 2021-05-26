@@ -79,6 +79,7 @@
     <Compile Include="Model\RailwayCarriage.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\RelayCommand.cs" />
     <Compile Include="Model\Route.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
@@ -119,7 +120,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="ViewModel\AddFlightViewModel.cs" />
+    <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

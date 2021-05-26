@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FlightEditor"
+        xmlns:vm="clr-namespace:MVVM"
         mc:Ignorable="d"
         Title="Редактор рейсов" Height="500" Width="900">
     <Window.Resources>
@@ -68,15 +68,15 @@
                         <TextBlock Text="Поезд №:" VerticalAlignment="Center"></TextBlock>
                         <TextBlock Text="Поезд типа:" VerticalAlignment="Center"></TextBlock>
                         <TextBlock Text="Вагонов:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Мест:" VerticalAlignment="Center"></TextBlock>
+                        <TextBlock Text="Мест:" VerticalAlignment="Center"></TextBlock> 
                     </StackPanel>
 
                     <GroupBox Header="Поезд" Grid.Column="1">
                         <StackPanel>
-                            <DataGrid >
+                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Train}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Номер"></DataGridTextColumn>
-                                    <DataGridComboBoxColumn Header="Тип" Width="*"></DataGridComboBoxColumn>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal">
@@ -158,29 +158,28 @@
 
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Номер:"></TextBlock>
-                        <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                        <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBAddTrain, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <TextBlock Text="Тип:"></TextBlock>
-                        <ComboBox Width="120" HorizontalAlignment="Left"></ComboBox>
-                        <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
+                        <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrain}" SelectedItem="{Binding CBAddTrain}"></ComboBox>
+                        <Button HorizontalAlignment="Left" Content="Добавить" Width="75" Command="{Binding AddTrainCommand}"></Button>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.RowSpan="2">
-                        <DataGrid>
+                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrain}" >
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Номер" Width="*"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Тип" Width="*"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
                     </StackPanel>
-                    <GroupBox Grid.Row="1" Header="Редактировать таблицу">
+                    <GroupBox Grid.Row="1" Header="Редактировать запись">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Номер:"></TextBlock>
-                            <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                            <TextBox IsReadOnly="True" HorizontalAlignment="Left" Width="75" Text="{Binding SelectedNumberTrain, UpdateSourceTrigger=PropertyChanged}" ></TextBox>
                             <TextBlock Text="Тип:"></TextBlock>
-                            <ComboBox Width="120" HorizontalAlignment="Left"></ComboBox>
+                            <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrain}" SelectedItem="{Binding SelectedTypeTrain, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Изменить"></Button>
-                                <Button Content="Удалить"></Button>
+                                <Button Content="Изменить" Command="{Binding EditTrainCommand}"></Button>
+                                <Button Content="Удалить" Command="{Binding RemoveTrainCommand}"></Button>
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
