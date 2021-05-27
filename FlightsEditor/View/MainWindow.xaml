@@ -148,7 +148,7 @@
             <TabItem Header="Поезда">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -164,7 +164,7 @@
                         <Button HorizontalAlignment="Left" Content="Добавить" Width="75" Command="{Binding AddTrainCommand}"></Button>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.RowSpan="2">
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrain}" >
+                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrainAddTrain}" >
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
                                 <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
@@ -174,9 +174,9 @@
                     <GroupBox Grid.Row="1" Header="Редактировать запись">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Номер:"></TextBlock>
-                            <TextBox IsReadOnly="True" HorizontalAlignment="Left" Width="75" Text="{Binding SelectedNumberTrain, UpdateSourceTrigger=PropertyChanged}" ></TextBox>
+                            <TextBox IsReadOnly="True" HorizontalAlignment="Left" Width="75" Text="{Binding SelectedNumberTrainAddTrain}" ></TextBox>
                             <TextBlock Text="Тип:"></TextBlock>
-                            <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrain}" SelectedItem="{Binding SelectedTypeTrain, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                            <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrain}" SelectedItem="{Binding SelectedTypeTrainAddTrain, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
                             <StackPanel Orientation="Horizontal">
                                 <Button Content="Изменить" Command="{Binding EditTrainCommand}"></Button>
                                 <Button Content="Удалить" Command="{Binding RemoveTrainCommand}"></Button>
@@ -205,24 +205,23 @@
 
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Название:"></TextBlock>
-                            <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
-                            <Button HorizontalAlignment="Left" Content="Добавить" Width="75"></Button>
+                            <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBAddStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <Button HorizontalAlignment="Left" Content="Добавить" Width="75" Command="{Binding AddStationCommand}"></Button>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Grid.RowSpan="2">
-                            <DataGrid>
+                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Station}" SelectedItem="{Binding SelectedStationAddStation}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Станция" Width="*"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=Name}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
                         </StackPanel>
-                        <GroupBox Grid.Row="1" Header="Редактировать таблицу">
+                        <GroupBox Grid.Row="1" Header="Редактировать запись">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="Название:"></TextBlock>
-                                <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
+                                <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding SelectedNameStationAddStation, UpdateSourceTrigger=PropertyChanged}" ></TextBox>
                                 <StackPanel Orientation="Horizontal">
-                                    <Button Content="Изменить"></Button>
-                                    <Button Content="Удалить"></Button>
+                                    <Button Content="Изменить" Command="{Binding EditStationCommand}"></Button>
+                                    <Button Content="Удалить" Command="{Binding RemoveStationCommand}"></Button>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
@@ -248,15 +247,14 @@
                                 </StackPanel>
                             </GroupBox>
                             <StackPanel Grid.RowSpan="2">
-                                <DataGrid>
+                                <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding SelectedStationDistanceAddStation}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Станция" Width="*"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Расстояние" Width="*"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=idStation_1}"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Расстояние" Width="*" Binding="{Binding Path=Distance1}"></DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                                <Button Content="Обновить" VerticalAlignment="Bottom"></Button>
                             </StackPanel>
-                            <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать таблицу">
+                            <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать запись">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="Название:"></TextBlock>
                                     <TextBox HorizontalAlignment="Left" Width="75"></TextBox>
