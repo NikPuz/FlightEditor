@@ -19,6 +19,7 @@ namespace MVVM
         public ViewModel()
         {
             FillTrain();
+            FillTypeRailwayCarriageName();
             FillTypeTrainName();
             FillStation();
             FillStationName();
@@ -31,6 +32,13 @@ namespace MVVM
             this.Train = q;
         }
 
+        private void FillTypeRailwayCarriageName()
+        {
+            var q = (from a in ctx.TypeRailwayCarriage
+                     .Select(a => a.Name)
+                     select a).ToList();
+            this.TypeRailwayCarriageName = q;
+        }
         private void FillTypeTrainName()
         {
             var q = (from a in ctx.TypeTrain
@@ -45,6 +53,7 @@ namespace MVVM
                      select a).ToList();
             this.Station = q;
         }
+
         private void FillStationName()
         {
             var q = (from a in ctx.Station
@@ -86,6 +95,17 @@ namespace MVVM
             }
         }
 
+        private List<string> _typeRailwayCarriageName;
+        public List<string> TypeRailwayCarriageName
+        {
+            get { return _typeRailwayCarriageName; }
+            set
+            {
+                _typeRailwayCarriageName = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private List<string> _typeTrainName;
         public List<string> TypeTrainName
         {
@@ -94,6 +114,146 @@ namespace MVVM
             {
                 _typeTrainName = value;
                 NotifyPropertyChanged();
+            }
+        }
+
+        //===Вкладка Добавить рейс
+
+        private ObservableCollection<RailwayCarriage> _railwayCarriageAddFlight;
+        public ObservableCollection<RailwayCarriage> RailwayCarriageAddFlight
+        {
+            get { return _railwayCarriageAddFlight; }
+            set
+            {
+                _railwayCarriageAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<RouteDataGrid> _routeAddFlight;
+        public ObservableCollection<RouteDataGrid> RouteAddFlight
+        {
+            get { return _routeAddFlight; }
+            set
+            {
+                _routeAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _selectedTypeRailwayCarriageAddFlight;
+        public string SelectedTypeRailwayCarriageAddFlight
+        {
+            get { return _selectedTypeRailwayCarriageAddFlight; }
+            set
+            {
+                _selectedTypeRailwayCarriageAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Train _selectedTrainAddFlight;
+        public Train SelectedTrainAddFlight
+        {
+            get { return _selectedTrainAddFlight; }
+            set
+            {
+                _selectedTrainAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _cBAddRouteAddFlight;
+        public string CBAddRouteAddFlight
+        {
+            get { return _cBAddRouteAddFlight; }
+            set
+            {
+                _cBAddRouteAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _tBAddRouteAddFlight;
+        public string TBAddRouteAddFlight
+        {
+            get { return _tBAddRouteAddFlight; }
+            set
+            {
+                _tBAddRouteAddFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private RelayCommand _addRouteAddFlight;
+        public RelayCommand AddRouteAddFlight
+        {
+            get
+            {
+                return _addRouteAddFlight ??
+                (_addRouteAddFlight = new RelayCommand(obj =>
+                {
+                    if (RouteAddFlight == null) RouteAddFlight = new ObservableCollection<RouteDataGrid>() { new RouteDataGrid() { NameStation = CBAddRouteAddFlight, Number = 1, StopDuration = Convert.ToInt32(TBAddRouteAddFlight) } };
+                    else
+                    {
+                        ObservableCollection<RouteDataGrid> collectionRoute = new ObservableCollection<RouteDataGrid>();
+                        collectionRoute = RouteAddFlight;
+                        collectionRoute.Add(new RouteDataGrid() { NameStation = CBAddRouteAddFlight, Number = RouteAddFlight.Count() + 1, StopDuration = Convert.ToInt32(TBAddRouteAddFlight) });
+                        RouteAddFlight = collectionRoute;
+                    }
+                }));
+            }
+        }
+
+        private RelayCommand _addRailwayCarriageAddFlight;
+        public RelayCommand AddRailwayCarriageAddFlight
+        {
+            get
+            {
+                return _addRailwayCarriageAddFlight ??
+                (_addRailwayCarriageAddFlight = new RelayCommand(obj =>
+                {
+                    if (RailwayCarriageAddFlight == null) RailwayCarriageAddFlight = new ObservableCollection<RailwayCarriage>() { new RailwayCarriage() { Type = SelectedTypeRailwayCarriageAddFlight, NumRailwayCarriage = 1 } };
+                    else
+                    {
+                        ObservableCollection<RailwayCarriage> collectionRailwayCarriage = new ObservableCollection<RailwayCarriage>();
+                        collectionRailwayCarriage = RailwayCarriageAddFlight;
+                        collectionRailwayCarriage.Add(new RailwayCarriage() { Type = SelectedTypeRailwayCarriageAddFlight, NumRailwayCarriage = RailwayCarriageAddFlight.Count() + 1 });
+                        RailwayCarriageAddFlight = collectionRailwayCarriage;
+                    }
+                }));
+            }
+        }
+
+        private RelayCommand _removeRailwayCarriageAddFlight;
+        public RelayCommand RemoveRailwayCarriageAddFlight
+        {
+            get
+            {
+                return _removeRailwayCarriageAddFlight ??
+                (_removeRailwayCarriageAddFlight = new RelayCommand(obj =>
+                {
+                    ObservableCollection<RailwayCarriage> collectionRailwayCarriage = new ObservableCollection<RailwayCarriage>();
+                    collectionRailwayCarriage = RailwayCarriageAddFlight;
+                    collectionRailwayCarriage.Remove(collectionRailwayCarriage.Last());
+                    RailwayCarriageAddFlight = collectionRailwayCarriage;
+                }));
+            }
+        }
+
+        private RelayCommand _removeRemoteAddFlight;
+        public RelayCommand RemoveRouteAddFlight
+        {
+            get
+            {
+                return _removeRemoteAddFlight ??
+                (_removeRemoteAddFlight = new RelayCommand(obj =>
+                {
+                    ObservableCollection<RouteDataGrid> collectionRoute = new ObservableCollection<RouteDataGrid>();
+                    collectionRoute = RouteAddFlight;
+                    collectionRoute.Remove(collectionRoute.Last());
+                    RouteAddFlight = collectionRoute;
+                }));
             }
         }
 

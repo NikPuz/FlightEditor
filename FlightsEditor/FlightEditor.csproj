@@ -83,6 +83,7 @@
     <Compile Include="Model\Route.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\RouteDataGrid.cs" />
     <Compile Include="Model\Seat.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>

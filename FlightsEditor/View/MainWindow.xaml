@@ -47,8 +47,8 @@
                     <GridSplitter Grid.Column="4" ShowsPreview="False" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                     <StackPanel Orientation="Vertical" Margin="5,5,5,5">
                         <TextBlock Text="Рейс №:" VerticalAlignment="Center"></TextBlock>
-                            <TextBox Width="50" HorizontalAlignment="Left"></TextBox>
-                            <TextBlock Text="Д/В отправления:" VerticalAlignment="Center"></TextBlock>
+                        <TextBox Width="50" HorizontalAlignment="Left"></TextBox>
+                        <TextBlock Text="Д/В отправления:" VerticalAlignment="Center"></TextBlock>
                         <DatePicker Name="Picker">
                             <DatePicker.Resources>
                                 <Style TargetType="DatePickerTextBox">
@@ -68,63 +68,70 @@
                         <TextBlock Text="Поезд №:" VerticalAlignment="Center"></TextBlock>
                         <TextBlock Text="Поезд типа:" VerticalAlignment="Center"></TextBlock>
                         <TextBlock Text="Вагонов:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Мест:" VerticalAlignment="Center"></TextBlock> 
+                        <TextBlock Text="Мест:" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Добавить рейс"></Button>
                     </StackPanel>
 
                     <GroupBox Header="Поезд" Grid.Column="1">
                         <StackPanel>
-                            <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Train}">
+                            <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrainAddFlight}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Выбрать"></Button>
-                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <GroupBox Header="Состав" Grid.Column="3">
-                        <StackPanel Orientation="Vertical">
-                            <DataGrid CanUserAddRows="False">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Номер"></DataGridTextColumn>
-                                <DataGridComboBoxColumn Header="Тип" Width="*"></DataGridComboBoxColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                            <WrapPanel Orientation="Horizontal">
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Тип:" VerticalAlignment="Center"></TextBlock >
-                                <ComboBox Width="75"></ComboBox>
-                                <Button Content="Добавить"></Button>
-                                <Button Content="Удалить"></Button>
-                            </WrapPanel>
-                        </StackPanel>
+                                <ComboBox Width="120" ItemsSource="{Binding TypeRailwayCarriageName}" SelectedItem="{Binding SelectedTypeRailwayCarriageAddFlight, UpdateSourceTrigger=PropertyChanged}" ></ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Добавить" Command="{Binding AddRailwayCarriageAddFlight}"></Button>
+                                <Button Content="Удалить" Command="{Binding RemoveRailwayCarriageAddFlight}"></Button>
+                            </StackPanel>
 
-                    </GroupBox>
-                    
-                    <GroupBox Header="Маршрут" Grid.Column="5">
-                        <StackPanel>
-                            <DataGrid CanUserAddRows="False" VerticalAlignment="Stretch">
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" ItemsSource="{Binding RailwayCarriageAddFlight}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,55" >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Номер"></DataGridTextColumn>
-                                    <DataGridComboBoxColumn Header="Станция" Width="*"></DataGridComboBoxColumn>
-                                    <DataGridTextColumn Header="Время остановки"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumRailwayCarriage}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <WrapPanel Orientation="Horizontal">
-                                <TextBlock Text="Станция:" VerticalAlignment="Center"></TextBlock >
-                                <ComboBox Width="75"></ComboBox>
-                                <Button Content="Добавить"></Button>
-                                <Button Content="Удалить"></Button>
-                            </WrapPanel>
-                        </StackPanel>
+                        </WrapPanel>
                     </GroupBox>
-                    
+
+                    <GroupBox Header="Маршрут" Grid.Column="5">
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Станция:" VerticalAlignment="Center"></TextBlock >
+                                <ComboBox Width="120" ItemsSource="{Binding StationName}" SelectedItem="{Binding CBAddRouteAddFlight, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Длительность остановки:" VerticalAlignment="Center"></TextBlock >
+                                <TextBox Width="50" HorizontalAlignment="Left" Text="{Binding TBAddRouteAddFlight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Добавить" Command="{Binding AddRouteAddFlight}"></Button>
+                                <Button Content="Удалить" Command="{Binding RemoveRouteAddFlight}"></Button>
+                            </StackPanel>
+
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" VerticalAlignment="Stretch" ItemsSource="{Binding RouteAddFlight}" Margin="0,0,0,100">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=Number}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=NameStation}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Время остановки" Binding="{Binding Path=StopDuration}"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </WrapPanel>
+                    </GroupBox>
+
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Редактировать рейс">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
@@ -144,7 +151,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Поезда">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
@@ -163,14 +170,12 @@
                         <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrainName}" SelectedItem="{Binding CBAddTrain}"></ComboBox>
                         <Button HorizontalAlignment="Left" Content="Добавить" Width="75" Command="{Binding AddTrainCommand}"></Button>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Grid.RowSpan="2">
-                        <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrainAddTrain}" >
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
+                    <DataGrid Grid.Column="1" Grid.RowSpan="2" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrainAddTrain}" >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                     <GroupBox Grid.Row="1" Header="Редактировать запись">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Номер:"></TextBlock>
@@ -185,7 +190,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Станции">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
@@ -195,7 +200,7 @@
 
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -208,14 +213,12 @@
                             <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBAddStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                             <Button HorizontalAlignment="Left" Content="Добавить" Width="75" Command="{Binding AddStationCommand}"></Button>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Grid.RowSpan="2">
-                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Station}" SelectedItem="{Binding SelectedStationAddStation}" CanUserAddRows="False">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="id Станции" Width="auto" Binding="{Binding Path=idStation}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=Name}"></DataGridTextColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </StackPanel>
+                        <DataGrid Grid.Column="1" Grid.RowSpan="2" AutoGenerateColumns="False" ItemsSource="{Binding Station}" SelectedItem="{Binding SelectedStationAddStation}" CanUserAddRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="id Станции" Width="auto" Binding="{Binding Path=idStation}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=Name}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                         <GroupBox Grid.Row="1" Header="Редактировать запись">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="Название:"></TextBlock>
@@ -247,15 +250,13 @@
                                     <Button HorizontalAlignment="Left" Content="Назначить" Width="auto" Command="{Binding AddStationDistanceCommand}"></Button>
                                 </StackPanel>
                             </GroupBox>
-                            <StackPanel Grid.RowSpan="2">
-                                <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedStationDistanceAddStation}" SelectedItem="{Binding SelectedDistanceAddStation}">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="id Станции1" Width="auto" Binding="{Binding Path=idStation_1}"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="id Станции2" Width="auto" Binding="{Binding Path=idStation_2}"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Расстояние" Width="*" Binding="{Binding Path=Distance1}"></DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </StackPanel>
+                            <DataGrid Grid.RowSpan="2" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedStationDistanceAddStation}" SelectedItem="{Binding SelectedDistanceAddStation}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="id Станции1" Width="auto" Binding="{Binding Path=idStation_1}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="id Станции2" Width="auto" Binding="{Binding Path=idStation_2}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Расстояние" Width="*" Binding="{Binding Path=Distance1}"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
                             <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать запись">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="Расстояние:"></TextBlock>
