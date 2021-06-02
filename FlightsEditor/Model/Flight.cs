@@ -23,6 +23,7 @@ namespace FlightsEditor.Model
     
         public int NumFlight { get; set; }
         public int NumTrain { get; set; }
+        public System.DateTime DepartureDateTime { get; set; }
     
         public virtual Train Train { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -126,6 +127,15 @@ namespace MVVM
             set
             {
                 _railwayCarriageAddFlight = value;
+                int amoutSeat = 0;
+                foreach (var item in RailwayCarriageAddFlight)
+                {
+                    var q = (from a in ctx.TypeRailwayCarriage
+                    .Where(a => a.Name == item.Type)
+                             select a.NumberOfSeats);
+                    amoutSeat += q.FirstOrDefault();
+                }
+                TBlAmountSeatAddFlight = amoutSeat.ToString();
                 NotifyPropertyChanged();
             }
         }
@@ -159,6 +169,18 @@ namespace MVVM
             set
             {
                 _selectedTrainAddFlight = value;
+                TBlNumTrainAddFlight = value.NumTrain.ToString();
+                NotifyPropertyChanged();
+            }
+        }
+
+        private DateTime _departureDateTimeAddFlight;
+        public DateTime DepartureDateTimeAddFlight
+        {
+            get { return _departureDateTimeAddFlight; }
+            set
+            {
+                _departureDateTimeAddFlight = value;
                 NotifyPropertyChanged();
             }
         }
@@ -183,6 +205,89 @@ namespace MVVM
                 _tBAddRouteAddFlight = value;
                 NotifyPropertyChanged();
             }
+
+        }
+
+        private string _tBFlightAddFlight;
+        public string TBFlightAddFlight
+        {
+            get { return _tBFlightAddFlight; }
+            set
+            {
+                _tBFlightAddFlight = value;
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBlNumTrainAddFlight = "Поезд №:";
+        public string TBlNumTrainAddFlight
+        {
+            get { return _tBlNumTrainAddFlight; }
+            set
+            {
+                _tBlNumTrainAddFlight = "Поезд №:" + value;
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBlAmountSeatAddFlight = "Мест:";
+        public string TBlAmountSeatAddFlight
+        {
+            get { return _tBlAmountSeatAddFlight; }
+            set
+            {
+                _tBlAmountSeatAddFlight = "Мест: " + value;
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBDateAddFlight;
+        public string TBDateAddFlight
+        {
+            get { return _tBDateAddFlight; }
+            set
+            {
+                if (DateTime.TryParse(value, out _))
+                {
+                    DateTime dt = DateTime.Parse(value, CultureInfo.GetCultureInfo("en-US"));
+                    _tBDateAddFlight = dt.ToShortDateString();
+                }
+                DateTimeAddFlight = "";
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBTimeAddFlight = "00:00:00";
+        public string TBTimeAddFlight
+        {
+            get { return _tBTimeAddFlight; }
+            set
+            {
+                _tBTimeAddFlight = value;
+                DateTimeAddFlight = "";
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _dAteTimeAddFlight;
+        public string DateTimeAddFlight
+        {
+            get { return _dAteTimeAddFlight; }
+            set
+            {
+                DateTime dt;
+                if (DateTime.TryParse(TBDateAddFlight + " " + TBTimeAddFlight, out dt))
+                {
+                    _dAteTimeAddFlight = TBDateAddFlight + " " + TBTimeAddFlight;
+                }
+                NotifyPropertyChanged();
+            }
+
         }
 
         private RelayCommand _addRouteAddFlight;
@@ -416,18 +521,39 @@ namespace MVVM
             set
             {
                 if (value == null) return;
-                this.SelectedIdStationAddStation = value.idStation;
-                this.SelectedNameStationAddStation = value.Name;
+                SelectedIdStationAddStation = value.idStation;
+                SelectedNameStationAddStation = value.Name;
 
-                this.SelectedStationDistanceAddStation = value.Distance.ToList().Union(value.Distance1.ToList()).ToList();
+                List<Distance> distance = value.Distance.ToList().Union(value.Distance1.ToList()).ToList();
+                List<DistanceDataGrid> listdistanceDataGrid = new List<DistanceDataGrid>();
+                DistanceDataGrid distanceDataGrid = new DistanceDataGrid();
+                foreach (var item in distance)
+                {
+                    if (item.idStation_1 != value.idStation) listdistanceDataGrid.Add(new DistanceDataGrid
+                    {
+                        idStation_1 = item.idStation_1,
+                        idStation_2 = item.idStation_2,
+                        Distance = item.Distance1,
+                        NameStation = ctx.Station.First(a => a.idStation == item.idStation_1).Name
+                    });
+                    else if (item.idStation_2 != value.idStation) listdistanceDataGrid.Add(new DistanceDataGrid
+                    {
+                        idStation_1 = item.idStation_1,
+                        idStation_2 = item.idStation_2,
+                        Distance = item.Distance1,
+                        NameStation = ctx.Station.First(a => a.idStation == item.idStation_2).Name
+                    });
+
+                }
+                SelectedStationDistanceAddStation = listdistanceDataGrid;
 
                 _selectedStationAddStation = value;
                 NotifyPropertyChanged();
             }
         }
 
-        private List<Distance> _selectedStationDistanceAddStation;
-        public List<Distance> SelectedStationDistanceAddStation
+        private List<DistanceDataGrid> _selectedStationDistanceAddStation;
+        public List<DistanceDataGrid> SelectedStationDistanceAddStation
         {
             get { return _selectedStationDistanceAddStation; }
             set
@@ -526,15 +652,15 @@ namespace MVVM
             }
         }
 
-        private Distance _selectedDistanceAddStation;
-        public Distance SelectedDistanceAddStation
+        private DistanceDataGrid _selectedDistanceAddStation;
+        public DistanceDataGrid SelectedDistanceAddStation
         {
             get { return _selectedDistanceAddStation; }
             set
             {
                 if (value == null) return;
                 _selectedDistanceAddStation = value;
-                TBEditDistatseStation = _selectedDistanceAddStation.Distance1.ToString();
+                TBEditDistatseStation = _selectedDistanceAddStation.Distance.ToString();
                 NotifyPropertyChanged();
             }
         }
@@ -553,7 +679,7 @@ namespace MVVM
                       distance.Distance1 = _tBAddDistanseStation;
                       ctx.Distance.Add(distance);
                       ctx.SaveChanges();
-                      this.SelectedStationDistanceAddStation = _selectedStationAddStation.Distance.ToList();
+                      SelectedStationAddStation = SelectedStationAddStation;
 
                       NotifyPropertyChanged();
                   }));
@@ -568,10 +694,10 @@ namespace MVVM
                 return _editStationDistanceCommand ??
                   (_editStationDistanceCommand = new RelayCommand(obj =>
                   {
-                      Distance distance = ctx.Distance.First(a => a.idStation_1 == _selectedDistanceAddStation.idStation_1 && a.idStation_2 == _selectedDistanceAddStation.idStation_2);
+                      Distance distance = ctx.Distance.First(a => a.idStation_1 == SelectedDistanceAddStation.idStation_1 && a.idStation_2 == SelectedDistanceAddStation.idStation_2);
                       distance.Distance1 = Convert.ToInt32(_tBEditDistanseStation);
                       ctx.SaveChanges();
-                      this.SelectedStationDistanceAddStation = _selectedStationAddStation.Distance.ToList().Union(_selectedStationAddStation.Distance1.ToList()).ToList();
+                      SelectedStationAddStation = SelectedStationAddStation;
 
                       NotifyPropertyChanged();
                   }));
@@ -586,10 +712,10 @@ namespace MVVM
                 return _removeStationDistanceCommand ??
                   (_removeStationDistanceCommand = new RelayCommand(obj =>
                   {
-                      Distance distance = ctx.Distance.First(a => a.idStation_1 == _selectedDistanceAddStation.idStation_1 && a.idStation_2 == _selectedDistanceAddStation.idStation_2);
+                      Distance distance = ctx.Distance.First(a => a.idStation_1 == SelectedDistanceAddStation.idStation_1 && a.idStation_2 == SelectedDistanceAddStation.idStation_2);
                       ctx.Distance.Remove(distance);
                       ctx.SaveChanges();
-                      this.SelectedStationDistanceAddStation = _selectedStationAddStation.Distance.ToList().Union(_selectedStationAddStation.Distance1.ToList()).ToList();
+                      SelectedStationAddStation = SelectedStationAddStation;
 
                       NotifyPropertyChanged();
                   }));

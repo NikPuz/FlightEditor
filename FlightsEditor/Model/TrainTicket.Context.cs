@@ -36,5 +36,6 @@ namespace FlightsEditor.Model
         public virtual DbSet<Train> Train { get; set; }
         public virtual DbSet<TypeRailwayCarriage> TypeRailwayCarriage { get; set; }
         public virtual DbSet<TypeTrain> TypeTrain { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
     }
 }

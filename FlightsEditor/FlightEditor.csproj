@@ -70,6 +70,7 @@
     <Compile Include="Model\Distance.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\DistanceDataGrid.cs" />
     <Compile Include="Model\Flight.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
@@ -88,6 +89,9 @@
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Station.cs">
+      <DependentUpon>TrainTicket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\sysdiagrams.cs">
       <DependentUpon>TrainTicket.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Ticket.cs">

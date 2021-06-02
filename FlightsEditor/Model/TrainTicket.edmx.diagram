@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="a1d3be58beeb4755a31e47800caddb19" Name="Diagram1" ZoomLevel="67">
+      <Diagram DiagramId="a1d3be58beeb4755a31e47800caddb19" Name="Diagram1" ZoomLevel="88">
         <EntityTypeShape EntityType="TrainTicketModel.Distance" Width="1.5" PointX="2" PointY="9" IsExpanded="true" />
         <EntityTypeShape EntityType="TrainTicketModel.Flight" Width="1.5" PointX="8.875" PointY="0.625" IsExpanded="true" />
         <EntityTypeShape EntityType="TrainTicketModel.Passenger" Width="1.5" PointX="0.625" PointY="3" IsExpanded="true" />
@@ -30,6 +30,7 @@
         <AssociationConnector Association="TrainTicketModel.FK_Ticket_Station1" ManuallyRouted="false" />
         <AssociationConnector Association="TrainTicketModel.FK_Ticket_Train" ManuallyRouted="false" />
         <AssociationConnector Association="TrainTicketModel.FK_Train_TypeTrain" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="TrainTicketModel.sysdiagrams" Width="1.5" PointX="6.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

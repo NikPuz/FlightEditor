@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:vm="clr-namespace:MVVM"
         mc:Ignorable="d"
         Title="Редактор рейсов" Height="500" Width="900">
@@ -47,28 +48,13 @@
                     <GridSplitter Grid.Column="4" ShowsPreview="False" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                     <StackPanel Orientation="Vertical" Margin="5,5,5,5">
                         <TextBlock Text="Рейс №:" VerticalAlignment="Center"></TextBlock>
-                        <TextBox Width="50" HorizontalAlignment="Left"></TextBox>
-                        <TextBlock Text="Д/В отправления:" VerticalAlignment="Center"></TextBlock>
-                        <DatePicker Name="Picker">
-                            <DatePicker.Resources>
-                                <Style TargetType="DatePickerTextBox">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate>
-                                                <TextBox Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType=DatePicker}, StringFormat={}{0:dd/MM/yyyy hh:mm:ss}}"/>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </DatePicker.Resources>
-                        </DatePicker>
-                        <TextBlock Text="Д/В прибытия:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Станция отправления:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Станция прибытия:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Поезд №:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Поезд типа:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Вагонов:" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Text="Мест:" VerticalAlignment="Center"></TextBlock>
+                        <TextBox Width="50" HorizontalAlignment="Left" Text="{Binding TBFlightAddFlight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBlock Text="Дата отправления:" VerticalAlignment="Center"></TextBlock>
+                        <DatePicker SelectedDate="{Binding TBDateAddFlight, UpdateSourceTrigger=PropertyChanged}" SelectedDateFormat="Short"></DatePicker>
+                        <TextBlock Text="Время отправления:" VerticalAlignment="Center"></TextBlock>
+                        <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding TBTimeAddFlight, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="{Binding TBlNumTrainAddFlight}" VerticalAlignment="Center"></TextBlock>
+                        <TextBlock Text="{Binding TBlAmountSeatAddFlight}" VerticalAlignment="Center"></TextBlock>
                         <Button Content="Добавить рейс"></Button>
                     </StackPanel>
 
@@ -252,9 +238,8 @@
                             </GroupBox>
                             <DataGrid Grid.RowSpan="2" CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding SelectedStationDistanceAddStation}" SelectedItem="{Binding SelectedDistanceAddStation}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="id Станции1" Width="auto" Binding="{Binding Path=idStation_1}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="id Станции2" Width="auto" Binding="{Binding Path=idStation_2}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Расстояние" Width="*" Binding="{Binding Path=Distance1}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=NameStation}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Расстояние" Width="auto" Binding="{Binding Path=Distance}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать запись">
