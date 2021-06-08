@@ -49,13 +49,14 @@
                     <StackPanel Orientation="Vertical" Margin="5,5,5,5">
                         <TextBlock Text="Рейс №:" VerticalAlignment="Center"></TextBlock>
                         <TextBox Width="50" HorizontalAlignment="Left" Text="{Binding TBFlightAddFlight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock Text="Дата отправления:" VerticalAlignment="Center"></TextBlock>
-                        <DatePicker SelectedDate="{Binding TBDateAddFlight, UpdateSourceTrigger=PropertyChanged}" SelectedDateFormat="Short"></DatePicker>
                         <TextBlock Text="Время отправления:" VerticalAlignment="Center"></TextBlock>
-                        <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding TBTimeAddFlight, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox HorizontalAlignment="Left" Width="55" Text="{Binding TBTimeAddFlight, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="Дата отправления:" VerticalAlignment="Center"></TextBlock>
+                        <DatePicker Focusable="False" SelectedDate="{Binding TBDateAddFlight, UpdateSourceTrigger=PropertyChanged}" SelectedDateFormat="Short"></DatePicker>
+                        
                         <TextBlock Text="{Binding TBlNumTrainAddFlight}" VerticalAlignment="Center"></TextBlock>
                         <TextBlock Text="{Binding TBlAmountSeatAddFlight}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Добавить рейс"></Button>
+                        <Button Command="{Binding AddFlightAddFlight}" Content="Добавить рейс"></Button>
                     </StackPanel>
 
                     <GroupBox Header="Поезд" Grid.Column="1">
@@ -109,7 +110,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Номер" Binding="{Binding Path=Number}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=NameStation}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Время остановки" Binding="{Binding Path=StopDuration}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Остановка" Binding="{Binding Path=StopDuration}"></DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </WrapPanel>
@@ -122,18 +123,82 @@
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Header="Маршрут" Grid.Column="1">
+                    <GridSplitter Grid.Column="2" ShowsPreview="False" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                    <GridSplitter Grid.Column="4" ShowsPreview="False" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Vertical" Margin="5,5,5,5">
+                        <TextBlock Text="Рейс №:" VerticalAlignment="Center"></TextBlock>
+                        <ComboBox Width="55" HorizontalAlignment="Left" ItemsSource="{Binding CBFlightEditFlight}" SelectedItem="{Binding CBSelectedFlightEditFlight, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                        <TextBlock Text="Время отправления:" VerticalAlignment="Center"></TextBlock>
+                        <TextBox HorizontalAlignment="Left" Width="55" Text="{Binding TBTimeEditFlight, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="Дата отправления:" VerticalAlignment="Center"></TextBlock>
+                        <DatePicker Focusable="False" SelectedDate="{Binding TBDateEditFlight, UpdateSourceTrigger=PropertyChanged}" SelectedDateFormat="Short"></DatePicker>
+                        <TextBlock Text="{Binding TBlNumTrainEditFlight}" VerticalAlignment="Center"></TextBlock>
+                        <TextBlock Text="{Binding TBlAmountSeatEditFlight}" VerticalAlignment="Center"></TextBlock>
+                        <Button Command="{Binding EditDateTimeEditFlight}" Content="Сохранить дату и время"></Button>
+                        <Button Command="{Binding RemoveFlightEditFlight}" Content="Удалить рейс"></Button>
+                    </StackPanel>
 
+                    <GroupBox Header="Поезд" Grid.Column="1">
+                        <StackPanel>
+                            <DataGrid CanUserAddRows="False" AutoGenerateColumns="False" ItemsSource="{Binding Train}" SelectedItem="{Binding SelectedTrainEditFlight}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumTrain}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal"/>
+                        </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Поезд" Grid.Column="2">
 
-                    </GroupBox>
                     <GroupBox Header="Состав" Grid.Column="3">
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Тип:" VerticalAlignment="Center"></TextBlock >
+                                <ComboBox Width="120" ItemsSource="{Binding TypeRailwayCarriageName}" SelectedItem="{Binding SelectedTypeRailwayCarriageEditFlight, UpdateSourceTrigger=PropertyChanged}" ></ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Добавить" Command="{Binding AddRailwayCarriageEditFlight}"></Button>
+                                <Button Content="Удалить" Command="{Binding RemoveRailwayCarriageEditFlight}"></Button>
+                            </StackPanel>
 
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" ItemsSource="{Binding RailwayCarriageEditFlight}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,55" >
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=NumRailwayCarriage}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Path=Type}"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </WrapPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Маршрут" Grid.Column="5">
+                        <WrapPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Станция:" VerticalAlignment="Center"></TextBlock >
+                                <ComboBox Width="120" ItemsSource="{Binding StationName}" SelectedItem="{Binding CBSelectedStationNameEditFlight, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Длительность остановки:" VerticalAlignment="Center"></TextBlock >
+                                <TextBox Width="50" HorizontalAlignment="Left" Text="{Binding TBAddRouteEditFlight, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Добавить" Command="{Binding AddRouteEditFlight}"></Button>
+                                <Button Content="Удалить" Command="{Binding RemoveRouteEditFlight}"></Button>
+                            </StackPanel>
+
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" VerticalAlignment="Stretch" ItemsSource="{Binding RouteEditFlight}" Margin="0,0,0,100">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding Path=Number}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Станция" Width="*" Binding="{Binding Path=NameStation}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Остановка" Binding="{Binding Path=StopDuration}"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </WrapPanel>
                     </GroupBox>
                 </Grid>
             </TabItem>
@@ -164,8 +229,7 @@
                     </DataGrid>
                     <GroupBox Grid.Row="1" Header="Редактировать запись">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Номер:"></TextBlock>
-                            <TextBox IsReadOnly="True" HorizontalAlignment="Left" Width="75" Text="{Binding SelectedNumberTrainAddTrain}" ></TextBox>
+                            <TextBlock Text="{Binding SelectedNumberTrainAddTrain}"></TextBlock>
                             <TextBlock Text="Тип:"></TextBlock>
                             <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding TypeTrainName}" SelectedItem="{Binding SelectedTypeTrainAddTrain, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
                             <StackPanel Orientation="Horizontal">
@@ -232,7 +296,7 @@
                                     <TextBlock Text="Станция:"></TextBlock>
                                     <ComboBox Width="120" HorizontalAlignment="Left" ItemsSource="{Binding StationName}" SelectedItem="{Binding CBAddDistatseStation, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
                                     <TextBlock Text="Расстояние:"></TextBlock>
-                                    <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBAddDistatseStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBAddDistanceStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     <Button HorizontalAlignment="Left" Content="Назначить" Width="auto" Command="{Binding AddStationDistanceCommand}"></Button>
                                 </StackPanel>
                             </GroupBox>
@@ -245,7 +309,7 @@
                             <GroupBox Grid.Row="1" Grid.Column="1" Header="Редактировать запись">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="Расстояние:"></TextBlock>
-                                    <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBEditDistatseStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    <TextBox HorizontalAlignment="Left" Width="75" Text="{Binding TBEditDistanceStation, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="Изменить" Command="{Binding EditStationDistanceCommand}"></Button>
                                         <Button Content="Удалить" Command="{Binding RemoveStationDistanceCommand}"></Button>

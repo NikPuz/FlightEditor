@@ -1,15 +1,12 @@
 ﻿using FlightsEditor.Model;
-using MVVM;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace MVVM
 {
@@ -24,13 +21,20 @@ namespace MVVM
             FillTypeTrainName();
             FillStation();
             FillStationName();
+            FillFlight();
         }
 
         private void FillTrain()
         {
             var q = (from a in ctx.Train
                      select a).ToList();
-            this.Train = q;
+            Train = q;
+        }
+        private void FillFlight()
+        {
+            var q = (from a in ctx.Flight
+                     select a).ToList();
+            Flight = q;
         }
 
         private void FillTypeRailwayCarriageName()
@@ -38,21 +42,21 @@ namespace MVVM
             var q = (from a in ctx.TypeRailwayCarriage
                      .Select(a => a.Name)
                      select a).ToList();
-            this.TypeRailwayCarriageName = q;
+            TypeRailwayCarriageName = q;
         }
         private void FillTypeTrainName()
         {
             var q = (from a in ctx.TypeTrain
                      .Select(a => a.Name)
                      select a).ToList();
-            this.TypeTrainName = q;
+            TypeTrainName = q;
         }
 
         private void FillStation()
         {
             var q = (from a in ctx.Station
                      select a).ToList();
-            this.Station = q;
+            Station = q;
         }
 
         private void FillStationName()
@@ -60,7 +64,7 @@ namespace MVVM
             var q = (from a in ctx.Station
                      .Select(a => a.Name)
                      select a).ToList();
-            this.StationName = q;
+            StationName = q;
         }
 
         private List<Station> _station;
@@ -70,6 +74,22 @@ namespace MVVM
             set
             {
                 _station = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private List<Flight> _flight;
+        public List<Flight> Flight
+        {
+            get { return _flight; }
+            set
+            {
+                _flight = value;
+                var q = (from a in value
+                         .Select(a => a.NumFlight)
+                                      select a).ToList();
+                CBFlightEditFlight = q;
+
                 NotifyPropertyChanged();
             }
         }
@@ -196,13 +216,16 @@ namespace MVVM
             }
         }
 
-        private string _tBAddRouteAddFlight;
+        private string _tBAddRouteAddFlight = "0";
         public string TBAddRouteAddFlight
         {
             get { return _tBAddRouteAddFlight; }
             set
             {
-                _tBAddRouteAddFlight = value;
+                if (int.TryParse(value, out _))
+                {
+                    _tBAddRouteAddFlight = value;
+                }
                 NotifyPropertyChanged();
             }
 
@@ -214,7 +237,10 @@ namespace MVVM
             get { return _tBFlightAddFlight; }
             set
             {
-                _tBFlightAddFlight = value;
+                if (int.TryParse(value, out _) && value != "0")
+                {
+                    _tBFlightAddFlight = value;
+                }
                 NotifyPropertyChanged();
             }
 
@@ -244,17 +270,13 @@ namespace MVVM
 
         }
 
-        private string _tBDateAddFlight;
-        public string TBDateAddFlight
+        private DateTime _tBDateAddFlight = DateTime.Now.Date;
+        public DateTime TBDateAddFlight
         {
             get { return _tBDateAddFlight; }
             set
             {
-                if (DateTime.TryParse(value, out _))
-                {
-                    DateTime dt = DateTime.Parse(value, CultureInfo.GetCultureInfo("en-US"));
-                    _tBDateAddFlight = dt.ToShortDateString();
-                }
+                _tBDateAddFlight = value;
                 DateTimeAddFlight = "";
                 NotifyPropertyChanged();
             }
@@ -267,7 +289,10 @@ namespace MVVM
             get { return _tBTimeAddFlight; }
             set
             {
-                _tBTimeAddFlight = value;
+                if (DateTime.TryParse(value, out _))
+                {
+                    _tBTimeAddFlight = value;
+                }
                 DateTimeAddFlight = "";
                 NotifyPropertyChanged();
             }
@@ -281,13 +306,134 @@ namespace MVVM
             set
             {
                 DateTime dt;
-                if (DateTime.TryParse(TBDateAddFlight + " " + TBTimeAddFlight, out dt))
+                if (DateTime.TryParse(TBDateAddFlight.ToShortDateString() + " " + TBTimeAddFlight, out dt))
                 {
-                    _dAteTimeAddFlight = TBDateAddFlight + " " + TBTimeAddFlight;
+                    _dAteTimeAddFlight = TBDateAddFlight.ToShortDateString() + " " + TBTimeAddFlight;
                 }
                 NotifyPropertyChanged();
             }
 
+        }
+
+        private RelayCommand _addFlightAddFlight;
+        public RelayCommand AddFlightAddFlight
+        {
+            get
+            {
+                return _addFlightAddFlight ??
+                (_addFlightAddFlight = new RelayCommand(obj =>
+                {
+                    if (ctx.Flight.Any(a => a.NumFlight.ToString() == TBFlightAddFlight)) { MessageBox.Show("Рейс с этим номером уже существует.", "Ошибка!"); return; }
+                    if (TBFlightAddFlight == null) { MessageBox.Show("Номер рейса не задан.", "Ошибка!"); return; }
+                    if (TBDateAddFlight == null) { MessageBox.Show("Дата отправления не задана.", "Обшибка!"); return; }
+                    if (RailwayCarriageAddFlight == null || RailwayCarriageAddFlight.Count == 0) { MessageBox.Show("Состав не задан.", "Обшибка!"); return; }
+                    if (RouteAddFlight == null || RouteAddFlight.Count == 0) { MessageBox.Show("Маршрут не задан.", "Обшибка!"); return; }
+                    if (SelectedTrainAddFlight == null) { MessageBox.Show("Поезд не выбран.", "Обшибка!"); return; }
+
+                    Flight flight = new Flight();
+                    Seat seat = new Seat();
+                    Route route = new Route();
+                    flight.NumFlight = Convert.ToInt32(TBFlightAddFlight);
+                    flight.NumTrain = SelectedTrainAddFlight.NumTrain;
+                    flight.DepartureDateTime = DateTime.Parse(DateTimeAddFlight);
+                    ctx.Flight.Add(flight);
+
+                    foreach (var carriage in RailwayCarriageAddFlight)
+                    {
+                        carriage.NumFlight = flight.NumFlight;
+                        ctx.RailwayCarriage.Add(new RailwayCarriage { NumFlight = carriage.NumFlight, NumRailwayCarriage = carriage.NumRailwayCarriage, Type = carriage.Type });
+                        switch (carriage.Type)
+                        {
+                            case "Плацкарт":
+                                for (int num = 1; num < 54; num++)
+                                {
+                                    seat.Upper = false;
+                                    seat.Side = false;
+                                    seat.NumFlight = flight.NumFlight;
+                                    seat.NumRailwayCarriage = carriage.NumRailwayCarriage;
+                                    seat.NumSeat = num;
+                                    if (num % 2 == 0) seat.Upper = true;
+                                    if (num > 36) seat.Side = true;
+                                    ctx.Seat.Add(new Seat { NumSeat = seat.NumSeat,
+                                        NumRailwayCarriage = seat.NumRailwayCarriage,
+                                        NumFlight = seat.NumFlight, 
+                                        Upper = seat.Upper, 
+                                        Side = seat.Side});
+                                }
+                                break;
+                            case "Купе":
+                                seat.Side = false;
+                                for (int num = 1; num < 37; num++)
+                                {
+                                    seat.Upper = false;
+                                    seat.NumFlight = flight.NumFlight;
+                                    seat.NumRailwayCarriage = carriage.NumRailwayCarriage;
+                                    seat.NumSeat = num;
+                                    if (num % 2 == 0) seat.Upper = true;
+                                    ctx.Seat.Add(new Seat
+                                    {
+                                        NumSeat = seat.NumSeat,
+                                        NumRailwayCarriage = seat.NumRailwayCarriage,
+                                        NumFlight = seat.NumFlight,
+                                        Upper = seat.Upper,
+                                        Side = seat.Side
+                                    });
+                                }
+                                break;
+                            case "Люкс":
+                                seat.Upper = false;
+                                seat.Side = false;
+                                for (int num = 1; num < 19; num++)
+                                {
+                                    seat.NumFlight = flight.NumFlight;
+                                    seat.NumRailwayCarriage = carriage.NumRailwayCarriage;
+                                    seat.NumSeat = num;
+                                    ctx.Seat.Add(new Seat
+                                    {
+                                        NumSeat = seat.NumSeat,
+                                        NumRailwayCarriage = seat.NumRailwayCarriage,
+                                        NumFlight = seat.NumFlight,
+                                        Upper = seat.Upper,
+                                        Side = seat.Side
+                                    });
+                                }
+                                break;
+                            case "Сидячий":
+                                seat.Upper = false;
+                                seat.Side = false;
+                                for (int num = 1; num < 67; num++)
+                                {
+                                    seat.NumFlight = flight.NumFlight;
+                                    seat.NumRailwayCarriage = carriage.NumRailwayCarriage;
+                                    seat.NumSeat = num;
+                                    ctx.Seat.Add(new Seat
+                                    {
+                                        NumSeat = seat.NumSeat,
+                                        NumRailwayCarriage = seat.NumRailwayCarriage,
+                                        NumFlight = seat.NumFlight,
+                                        Upper = seat.Upper,
+                                        Side = seat.Side
+                                    });
+                                }
+                                break;
+                        }
+                    }
+                    foreach (var routeAddFlight in RouteAddFlight)
+                    {
+                        route.NumFlight = flight.NumFlight;
+                        route.NumberInRoute = routeAddFlight.Number;
+                        route.StopDuration = TimeSpan.FromMinutes(routeAddFlight.StopDuration);
+                        var q = (from a in ctx.Station
+                                 .Where(a => a.Name == routeAddFlight.NameStation)
+                                 select a.idStation);
+                        route.idStation = q.FirstOrDefault();
+                        ctx.Route.Add(new Route { idStation = route.idStation, NumFlight = route.NumFlight, NumberInRoute = route.NumberInRoute, StopDuration = route.StopDuration });
+                    }
+                    ctx.SaveChanges();
+                    MessageBox.Show("Рейс успешно добавлен", "Выполнено!");
+                    FillFlight();
+                }));
+            }
         }
 
         private RelayCommand _addRouteAddFlight;
@@ -346,18 +492,465 @@ namespace MVVM
             }
         }
 
-        private RelayCommand _removeRemoteAddFlight;
+        private RelayCommand _removeRouteAddFlight;
         public RelayCommand RemoveRouteAddFlight
         {
             get
             {
-                return _removeRemoteAddFlight ??
-                (_removeRemoteAddFlight = new RelayCommand(obj =>
+                return _removeRouteAddFlight ??
+                (_removeRouteAddFlight = new RelayCommand(obj =>
                 {
                     ObservableCollection<RouteDataGrid> collectionRoute = new ObservableCollection<RouteDataGrid>();
                     collectionRoute = RouteAddFlight;
                     collectionRoute.Remove(collectionRoute.Last());
                     RouteAddFlight = collectionRoute;
+                }));
+            }
+        }
+
+        //===Вкладка Изменить рейс
+
+        private List<int> _cBFlightEditFlight;
+        public List<int> CBFlightEditFlight
+        {
+            get { return _cBFlightEditFlight; }
+            set
+            {
+                _cBFlightEditFlight = value;
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _cBSelectedFlightEditFlight;
+        public int CBSelectedFlightEditFlight
+        {
+            get { return _cBSelectedFlightEditFlight; }
+            set
+            {
+                _cBSelectedFlightEditFlight = value;
+                if (value == 0) return;
+                Flight flight = new Flight();
+                flight = (from a in ctx.Flight
+                          .Where(a => a.NumFlight == value)
+                          select a).First();
+                TBTimeEditFlight = flight.DepartureDateTime.ToShortTimeString();
+                SelectedTrainEditFlight = flight.Train;
+                RailwayCarriageEditFlight = new ObservableCollection<RailwayCarriage>(flight.RailwayCarriage);
+                RouteEditFlight.Clear();
+                foreach (var item in flight.Route)
+                {
+                    RouteEditFlight.Add(new RouteDataGrid
+                    {
+                        NameStation = (from a in ctx.Station
+                                             .Where(a => a.idStation == item.idStation)
+                                       select a.Name).First(),
+                        Number = item.NumberInRoute,
+                        StopDuration = item.StopDuration.Value.Minutes
+                    });
+                }
+                int amoutSeat = 0;
+                foreach (var item in RailwayCarriageEditFlight)
+                {
+                    var q = (from a in ctx.TypeRailwayCarriage
+                    .Where(a => a.Name == item.Type)
+                             select a.NumberOfSeats);
+                    amoutSeat += q.FirstOrDefault();
+                }
+                TBlAmountSeatEditFlight = amoutSeat.ToString();
+                TBDateEditFlight = flight.DepartureDateTime.Date;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _cBSelectedStationNameEditFlight;
+        public string CBSelectedStationNameEditFlight
+        {
+            get { return _cBSelectedStationNameEditFlight; }
+            set
+            {
+                _cBSelectedStationNameEditFlight = value;
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        private DateTime _tBDateEditFlight = DateTime.Now.Date;
+        public DateTime TBDateEditFlight
+        {
+            get { return _tBDateEditFlight; }
+            set
+            {
+                _tBDateEditFlight = value;
+                DateTimeEditFlight = "";
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBTimeEditFlight = "00:00:00";
+        public string TBTimeEditFlight
+        {
+            get { return _tBTimeEditFlight; }
+            set
+            {
+                if (DateTime.TryParse(value, out _))
+                {
+                    _tBTimeEditFlight = value;
+                    DateTimeEditFlight = "";
+                }
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private ObservableCollection<RailwayCarriage> _railwayCarriageEditFlight = new ObservableCollection<RailwayCarriage>();
+        public ObservableCollection<RailwayCarriage> RailwayCarriageEditFlight
+        {
+            get { return _railwayCarriageEditFlight; }
+            set
+            {
+                _railwayCarriageEditFlight = value;
+                int amoutSeat = 0;
+                foreach (var item in RailwayCarriageEditFlight)
+                {
+                    var q = (from a in ctx.TypeRailwayCarriage
+                    .Where(a => a.Name == item.Type)
+                             select a.NumberOfSeats);
+                    amoutSeat += q.FirstOrDefault();
+                }
+                TBlAmountSeatEditFlight = amoutSeat.ToString();
+                NotifyPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<RouteDataGrid> _routeEditFlight = new ObservableCollection<RouteDataGrid>();
+        public ObservableCollection<RouteDataGrid> RouteEditFlight
+        {
+            get { return _routeEditFlight; }
+            set
+            {
+                _routeEditFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Train _selectedTrainEditFlight;
+        public Train SelectedTrainEditFlight
+        {
+            get { return _selectedTrainEditFlight; }
+            set
+            {
+                if (CBSelectedFlightEditFlight == 0) return;
+                Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+                flight.Train = value;
+                ctx.SaveChanges();
+                _selectedTrainEditFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private DateTime _departureDateTimeEditFlight;
+        public DateTime DepartureDateTimeEditFlight
+        {
+            get { return _departureDateTimeEditFlight; }
+            set
+            {
+                _departureDateTimeEditFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _tBAddRouteEditFlight = "0";
+        public string TBAddRouteEditFlight
+        {
+            get { return _tBAddRouteEditFlight; }
+            set
+            {
+                if (int.TryParse(value, out _))
+                {
+                    _tBAddRouteEditFlight = value;
+                }
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBFlightEditFlight;
+        public string TBFlightEditFlight
+        {
+            get { return _tBFlightEditFlight; }
+            set
+            {
+                if (int.TryParse(value, out _))
+                {
+                    _tBFlightEditFlight = value;
+                }
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBlNumTrainEditFlight = "Поезд №:";
+        public string TBlNumTrainEditFlight
+        {
+            get { return _tBlNumTrainEditFlight; }
+            set
+            {
+                _tBlNumTrainEditFlight = "Поезд №:" + value;
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _tBlAmountSeatEditFlight = "Мест:";
+        public string TBlAmountSeatEditFlight
+        {
+            get { return _tBlAmountSeatEditFlight; }
+            set
+            {
+                _tBlAmountSeatEditFlight = "Мест: " + value;
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _DateTimeEditFlight;
+        public string DateTimeEditFlight
+        {
+            get { return _DateTimeEditFlight; }
+            set
+            {
+                if (DateTime.TryParse(TBDateEditFlight.ToShortDateString() + " " + TBTimeEditFlight, out _))
+                {
+                    _DateTimeEditFlight = TBDateEditFlight.ToShortDateString() + " " + TBTimeEditFlight;
+                }
+                NotifyPropertyChanged();
+            }
+
+        }
+
+        private string _selectedTypeRailwayCarriageEditFlight;
+        public string SelectedTypeRailwayCarriageEditFlight
+        {
+            get { return _selectedTypeRailwayCarriageEditFlight; }
+            set
+            {
+                _selectedTypeRailwayCarriageEditFlight = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private RelayCommand _editDateTimeEditFlight;
+        public RelayCommand EditDateTimeEditFlight
+        {
+            get
+            {
+                return _editDateTimeEditFlight ??
+                (_editDateTimeEditFlight = new RelayCommand(obj =>
+                {
+                    if (CBSelectedFlightEditFlight == 0) return; 
+                    Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+                    flight.DepartureDateTime = DateTime.Parse(DateTimeEditFlight);
+                    ctx.SaveChanges();
+                }));
+            }
+        }
+
+        private RelayCommand _removeFlightEditFlight;
+        public RelayCommand RemoveFlightEditFlight
+        {
+            get
+            {
+                return _removeFlightEditFlight ??
+                (_removeFlightEditFlight = new RelayCommand(obj =>
+                {
+                    if (!(CBSelectedFlightEditFlight > 0)) { MessageBox.Show("Номер рейса не задан.", "Ошибка!"); return; }
+
+                    ctx.Route.RemoveRange(ctx.Route.Where(a => a.NumFlight == CBSelectedFlightEditFlight));
+                    ctx.Seat.RemoveRange(ctx.Seat.Where(a => a.NumFlight == CBSelectedFlightEditFlight));
+                    ctx.RailwayCarriage.RemoveRange(ctx.RailwayCarriage.Where(a => a.NumFlight == CBSelectedFlightEditFlight));
+                    ctx.Flight.RemoveRange(ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight));
+
+                    ctx.SaveChanges();
+                    FillFlight();
+                    CBSelectedFlightEditFlight = 0;
+                    SelectedTrainEditFlight = new Train();
+                    TBlAmountSeatEditFlight = "";
+                    RailwayCarriageEditFlight.Clear();
+                    RouteEditFlight.Clear();
+                    TBTimeEditFlight = "00:00:00";
+                    TBDateEditFlight = DateTime.Now.Date;
+                }));
+            }
+        }
+
+        private RelayCommand _addRailwayCarriageEditFlight;
+        public RelayCommand AddRailwayCarriageEditFlight
+        {
+            get
+            {
+                return _addRailwayCarriageEditFlight ??
+                (_addRailwayCarriageEditFlight = new RelayCommand(obj =>
+                {
+                    if (CBSelectedFlightEditFlight == 0 && SelectedTypeRailwayCarriageEditFlight != "") return;
+                    Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+                    int numRailwayCarriage;
+
+                    ObservableCollection<RailwayCarriage> collectionRailwayCarriage = new ObservableCollection<RailwayCarriage>();
+                    numRailwayCarriage = RailwayCarriageEditFlight.Count() + 1;
+                    collectionRailwayCarriage = RailwayCarriageEditFlight;
+                    collectionRailwayCarriage.Add(new RailwayCarriage() { Type = SelectedTypeRailwayCarriageEditFlight, NumRailwayCarriage = numRailwayCarriage, NumFlight = CBSelectedFlightEditFlight });
+                    flight.RailwayCarriage.Add(new RailwayCarriage() { Type = SelectedTypeRailwayCarriageEditFlight, NumRailwayCarriage = numRailwayCarriage, NumFlight = CBSelectedFlightEditFlight });
+                    RailwayCarriageEditFlight = collectionRailwayCarriage;
+
+                    Seat seat = new Seat();
+                    switch (SelectedTypeRailwayCarriageEditFlight)
+                    {
+                        case "Плацкарт":
+                            for (int num = 1; num < 54; num++)
+                            {
+                                seat.Upper = false;
+                                seat.Side = false;
+                                seat.NumFlight = flight.NumFlight;
+                                seat.NumRailwayCarriage = numRailwayCarriage;
+                                seat.NumSeat = num;
+                                if (num % 2 == 0) seat.Upper = true;
+                                if (num > 36) seat.Side = true;
+                                ctx.Seat.Add(new Seat
+                                {
+                                    NumSeat = seat.NumSeat,
+                                    NumRailwayCarriage = seat.NumRailwayCarriage,
+                                    NumFlight = seat.NumFlight,
+                                    Upper = seat.Upper,
+                                    Side = seat.Side
+                                });
+                            }
+                            break;
+                        case "Купе":
+                            seat.Side = false;
+                            for (int num = 1; num < 37; num++)
+                            {
+                                seat.Upper = false;
+                                seat.NumFlight = flight.NumFlight;
+                                seat.NumRailwayCarriage = numRailwayCarriage;
+                                seat.NumSeat = num;
+                                if (num % 2 == 0) seat.Upper = true;
+                                ctx.Seat.Add(new Seat
+                                {
+                                    NumSeat = seat.NumSeat,
+                                    NumRailwayCarriage = seat.NumRailwayCarriage,
+                                    NumFlight = seat.NumFlight,
+                                    Upper = seat.Upper,
+                                    Side = seat.Side
+                                });
+                            }
+                            break;
+                        case "Люкс":
+                            seat.Upper = false;
+                            seat.Side = false;
+                            for (int num = 1; num < 19; num++)
+                            {
+                                seat.NumFlight = flight.NumFlight;
+                                seat.NumRailwayCarriage = numRailwayCarriage;
+                                seat.NumSeat = num;
+                                ctx.Seat.Add(new Seat
+                                {
+                                    NumSeat = seat.NumSeat,
+                                    NumRailwayCarriage = seat.NumRailwayCarriage,
+                                    NumFlight = seat.NumFlight,
+                                    Upper = seat.Upper,
+                                    Side = seat.Side
+                                });
+                            }
+                            break;
+                        case "Сидячий":
+                            seat.Upper = false;
+                            seat.Side = false;
+                            for (int num = 1; num < 67; num++)
+                            {
+                                seat.NumFlight = flight.NumFlight;
+                                seat.NumRailwayCarriage = RailwayCarriageEditFlight.Count();
+                                seat.NumSeat = num;
+                                ctx.Seat.Add(new Seat
+                                {
+                                    NumSeat = seat.NumSeat,
+                                    NumRailwayCarriage = seat.NumRailwayCarriage,
+                                    NumFlight = seat.NumFlight,
+                                    Upper = seat.Upper,
+                                    Side = seat.Side
+                                });
+                            }
+                            break;
+                    }
+                    ctx.SaveChanges();
+                }));
+            }
+        }
+
+        private RelayCommand _removeRailwayCarriageEditFlight;
+        public RelayCommand RemoveRailwayCarriageEditFlight
+        {
+            get
+            {
+                return _removeRailwayCarriageEditFlight ??
+                (_removeRailwayCarriageEditFlight = new RelayCommand(obj =>
+                {
+                    if (CBSelectedFlightEditFlight == 0 || RailwayCarriageEditFlight.Count() == 0) return;
+
+                    Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+                    RailwayCarriage railwayCarriage = new RailwayCarriage();
+                    ObservableCollection<RailwayCarriage> collectionRailwayCarriage = new ObservableCollection<RailwayCarriage>();
+
+                    collectionRailwayCarriage = RailwayCarriageEditFlight;
+                    railwayCarriage = collectionRailwayCarriage.Last();
+                    collectionRailwayCarriage.Remove(railwayCarriage);
+                    RailwayCarriageEditFlight = collectionRailwayCarriage;
+                    ctx.Seat.RemoveRange(ctx.Seat.Where(a => a.NumRailwayCarriage == railwayCarriage.NumRailwayCarriage && a.NumFlight == railwayCarriage.NumFlight));
+                    flight.RailwayCarriage.Remove(railwayCarriage);
+                    ctx.SaveChanges();
+                }));
+            }
+        }
+
+        private RelayCommand _addRouteEditFlight;
+        public RelayCommand AddRouteEditFlight
+        {
+            get
+            {
+                return _addRouteEditFlight ??
+                (_addRouteEditFlight = new RelayCommand(obj =>
+                {
+                    if (CBSelectedFlightEditFlight == 0 || CBSelectedStationNameEditFlight == "") return;
+                    Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+
+                    RouteEditFlight.Add(new RouteDataGrid() { NameStation = CBSelectedStationNameEditFlight, Number = RouteEditFlight.Count() + 1, StopDuration = Convert.ToInt32(TBAddRouteEditFlight) });
+
+                    int idStation = ctx.Station.Where(a => a.Name == CBSelectedStationNameEditFlight).First().idStation;
+                    flight.Route.Add(new Route() { idStation = idStation, NumFlight = CBSelectedFlightEditFlight, NumberInRoute = RouteEditFlight.Count() + 1, StopDuration = TimeSpan.FromMinutes(Convert.ToInt32(TBAddRouteEditFlight)) });
+                    ctx.SaveChanges();
+                }));
+            }
+        }
+
+        private RelayCommand _removeRouteEditFlight;
+        public RelayCommand RemoveRouteEditFlight
+        {
+            get
+            {
+                return _removeRouteEditFlight ??
+                (_removeRouteEditFlight = new RelayCommand(obj =>
+                {
+                    if (CBSelectedFlightEditFlight == 0 || CBSelectedStationNameEditFlight == "") return;
+                    Flight flight = ctx.Flight.Where(a => a.NumFlight == CBSelectedFlightEditFlight).First();
+
+                    RouteDataGrid routeDataGrid = RouteEditFlight.Last();
+                    RouteEditFlight.Remove(routeDataGrid);
+
+                    int idStation = ctx.Station.Where(a => a.Name == routeDataGrid.NameStation).First().idStation;
+                    Route route = ctx.Route.Where(a => a.idStation == idStation && a.NumFlight == CBSelectedFlightEditFlight).First();
+                    flight.Route.Remove(route);
+                    ctx.SaveChanges();
                 }));
             }
         }
@@ -375,24 +968,32 @@ namespace MVVM
             }
         }
 
-        private int _selectedNumberTrainAddTrain;
-        public int SelectedNumberTrainAddTrain
+        private string _selectedNumberTrainAddTrain = "Номер:";
+        public string SelectedNumberTrainAddTrain
         {
             get { return _selectedNumberTrainAddTrain; }
             set
             {
-                _selectedNumberTrainAddTrain = value;
+                _selectedNumberTrainAddTrain = "Номер: " + value;
                 NotifyPropertyChanged();
             }
         }
 
-        private string _tBAddTrain;
+        private string _tBAddTrain = "0";
         public string TBAddTrain
         {
             get { return _tBAddTrain; }
             set
             {
-                _tBAddTrain = value;
+                if (int.TryParse(value, out _))
+                {
+                    
+                    if (!(from a in ctx.Train
+                     .Select(a => a.NumTrain)
+                             select a).ToList()
+                             .Contains(Convert.ToInt32(value)))
+                    _tBAddTrain = value;
+                }
                 NotifyPropertyChanged();
             }
         }
@@ -416,8 +1017,8 @@ namespace MVVM
             set
             {
                 if (value == null) return;
-                this.SelectedTypeTrainAddTrain = value.Type;
-                this.SelectedNumberTrainAddTrain = value.NumTrain;
+                SelectedTypeTrainAddTrain = value.Type;
+                SelectedNumberTrainAddTrain = value.NumTrain.ToString();
 
                 _selectedTrainAddTrain = value;
                 NotifyPropertyChanged();
@@ -630,24 +1231,30 @@ namespace MVVM
             }
         }
 
-        private int _tBAddDistanseStation;
-        public int TBAddDistatseStation
+        private string _tBAddDistanceStation = "0";
+        public string TBAddDistanceStation
         {
-            get { return _tBAddDistanseStation; }
+            get { return _tBAddDistanceStation; }
             set
             {
-                _tBAddDistanseStation = Convert.ToInt32(value);
+                if (int.TryParse(value, out _))
+                {
+                    _tBAddDistanceStation = value;
+                }
                 NotifyPropertyChanged();
             }
         }
 
-        private string _tBEditDistanseStation;
-        public string TBEditDistatseStation
+        private string _tBEditDistanceStation = "0";
+        public string TBEditDistanceStation
         {
-            get { return _tBEditDistanseStation; }
+            get { return _tBEditDistanceStation; }
             set
             {
-                _tBEditDistanseStation = value;
+                if (int.TryParse(value, out _))
+                {
+                    _tBEditDistanceStation = value;
+                }
                 NotifyPropertyChanged();
             }
         }
@@ -660,7 +1267,7 @@ namespace MVVM
             {
                 if (value == null) return;
                 _selectedDistanceAddStation = value;
-                TBEditDistatseStation = _selectedDistanceAddStation.Distance.ToString();
+                TBEditDistanceStation = _selectedDistanceAddStation.Distance.ToString();
                 NotifyPropertyChanged();
             }
         }
@@ -674,9 +1281,9 @@ namespace MVVM
                   (_addStationDistanceCommand = new RelayCommand(obj =>
                   {
                       Distance distance = new Distance();
-                      distance.idStation_1 = _selectedIdStationAddStation;
-                      distance.idStation_2 = ctx.Station.First(a => a.Name == _cBAddDistatseStation).idStation;
-                      distance.Distance1 = _tBAddDistanseStation;
+                      distance.idStation_1 = SelectedIdStationAddStation;
+                      distance.idStation_2 = ctx.Station.First(a => a.Name == CBAddDistatseStation).idStation;
+                      distance.Distance1 = Convert.ToInt32(TBAddDistanceStation);
                       ctx.Distance.Add(distance);
                       ctx.SaveChanges();
                       SelectedStationAddStation = SelectedStationAddStation;
@@ -695,7 +1302,7 @@ namespace MVVM
                   (_editStationDistanceCommand = new RelayCommand(obj =>
                   {
                       Distance distance = ctx.Distance.First(a => a.idStation_1 == SelectedDistanceAddStation.idStation_1 && a.idStation_2 == SelectedDistanceAddStation.idStation_2);
-                      distance.Distance1 = Convert.ToInt32(_tBEditDistanseStation);
+                      distance.Distance1 = Convert.ToInt32(_tBEditDistanceStation);
                       ctx.SaveChanges();
                       SelectedStationAddStation = SelectedStationAddStation;
 
